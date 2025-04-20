@@ -5,7 +5,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 interface Product {
-  _id: string;
+  id: string;
   name: string;
   description: string;
   price: number;
@@ -35,20 +35,20 @@ const FetchProducts: React.FC = () => {
         const response = await axios.get("https://freshcart-eqob.onrender.com/api/products");
         const data = response.data;
 
+        let loadedProducts: Product[] = [];
         if (Array.isArray(data)) {
-          setProducts(data);
-          setFilteredProducts(data);
+          loadedProducts = data;
         } else if (data && Array.isArray(data.products)) {
-          setProducts(data.products);
-          setFilteredProducts(data.products);
+          loadedProducts = data.products;
         } else {
           console.error("Unexpected response format:", data);
         }
 
-        if (Array.isArray(data.products)) {
-          const uniqueCategories = [...new Set(data.products.map((p: { category: string }) => p.category))] as string[];
-          setCategories(uniqueCategories);
-        }
+        setProducts(loadedProducts);
+        setFilteredProducts(loadedProducts);
+
+        const uniqueCategories = [...new Set(loadedProducts.map((p) => p.category))];
+        setCategories(uniqueCategories);
 
         toast.success("Products loaded successfully!", { autoClose: 1500 });
       } catch (error) {
@@ -59,6 +59,7 @@ const FetchProducts: React.FC = () => {
 
     fetchProducts();
 
+    // Load cart only inside useEffect
     const storedCart = localStorage.getItem("cart");
     if (storedCart) {
       setCart(JSON.parse(storedCart));
@@ -108,29 +109,30 @@ const FetchProducts: React.FC = () => {
   };
 
   const addToCart = (product: Product) => {
+    console.log("Adding to cart:", product);
     setCart((prevCart) => {
-      const existingItem = prevCart.find((item) => item._id === product._id);
-
+      const existingItem = prevCart.find((item) => item.id === product.id);
+  
       let updatedCart;
       if (existingItem) {
         updatedCart = prevCart.map((item) =>
-          item._id === product._id
+          item.id === product.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
       } else {
         updatedCart = [
           ...prevCart,
-          { ...product, quantity: 1, productId: product._id },
+          { ...product, quantity: 1 },
         ];
       }
-
+  
+      console.log("Updated cart:", updatedCart);
       localStorage.setItem("cart", JSON.stringify(updatedCart));
       toast.success(`${product.name} added to cart!`, { autoClose: 1200 });
       return updatedCart;
     });
   };
-
   return (
     <div className="min-h-screen bg-gradient-to-tr from-green-300 via-lime-200 to-yellow-300 p-6">
       <ToastContainer />
@@ -158,8 +160,8 @@ const FetchProducts: React.FC = () => {
           className="border border-gray-300 p-3 rounded-lg shadow-sm focus:ring-2 focus:ring-green-400"
         >
           <option value="">All Categories</option>
-          {categories.map((cat, idx) => (
-            <option key={idx} value={cat}>
+          {categories.map((cat) => (
+            <option key={cat} value={cat}>
               {cat}
             </option>
           ))}
@@ -179,7 +181,7 @@ const FetchProducts: React.FC = () => {
         {filteredProducts.length > 0 ? (
           filteredProducts.map((product) => (
             <div
-              key={product._id}
+              key={product.id} // ✅ added key
               className="border border-gray-200 bg-white p-4 rounded-xl shadow-md hover:shadow-lg transition-all flex flex-col items-center text-center space-y-3"
               style={{ minHeight: "350px", maxWidth: "300px", margin: "auto" }}
             >
@@ -188,26 +190,19 @@ const FetchProducts: React.FC = () => {
                 alt={product.name}
                 className="w-full h-40 object-cover rounded-lg"
               />
-             <div className="flex flex-col items-center text-center space-y-1">
-  <h3 className="text-xl font-extrabold text-green-800">{product.name}</h3>
-
-  <p className="text-gray-600 text-sm line-clamp-2 px-2">
-    {product.description}
-  </p>
-
-  <p className="text-green-700 font-bold text-lg mt-1">
-    ₹{product.price}
-  </p>
-
-  <div className="flex flex-wrap justify-center gap-2 text-sm text-gray-600 mt-1">
-    <span className="bg-green-100 px-2 py-1 rounded-full">
-      Stock: {product.stock}
-    </span>
-    <span className="bg-yellow-100 px-2 py-1 rounded-full">
-      {product.category}
-    </span>
-  </div>
-</div>
+              <div className="flex flex-col items-center text-center space-y-1">
+                <h3 className="text-xl font-extrabold text-green-800">{product.name}</h3>
+                <p className="text-gray-600 text-sm line-clamp-2 px-2">{product.description}</p>
+                <p className="text-green-700 font-bold text-lg mt-1">₹{product.price}</p>
+                <div className="flex flex-wrap justify-center gap-2 text-sm text-gray-600 mt-1">
+                  <span className="bg-green-100 px-2 py-1 rounded-full">
+                    Stock: {product.stock}
+                  </span>
+                  <span className="bg-yellow-100 px-2 py-1 rounded-full">
+                    {product.category}
+                  </span>
+                </div>
+              </div>
 
               <button
                 onClick={() => addToCart(product)}
