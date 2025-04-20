@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import pool from "../../src/config/db";
+import pool from "../config/db";
 import { Order } from "../models/order"; // Adjust path properly
 
 // Place a new order

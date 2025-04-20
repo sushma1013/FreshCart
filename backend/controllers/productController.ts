@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import pool from "../../src/config/db"; // Adjust the path if needed
+import pool from "../config/db"; // Adjust the path if needed
 
 // Fetch all products
 export const getProducts = async (req: Request, res: Response): Promise<void> => {
