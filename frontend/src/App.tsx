@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, JSX } from "react";
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
 import Products from './pages/Products';
@@ -58,7 +58,7 @@ function App() {
           path="/products"
           element={
             <UserProtectedRoute>
-              <Products setIsUserAuthenticated={setIsUserAuthenticated} />
+              <Products  />
             </UserProtectedRoute>
           }
         />
@@ -66,7 +66,7 @@ function App() {
           path="/cart"
           element={
             <UserProtectedRoute>
-              <Cart setIsUserAuthenticated={setIsUserAuthenticated} />
+              <Cart />
             </UserProtectedRoute>
           }
         />
@@ -82,7 +82,7 @@ function App() {
           path="/bulk-orders"
           element={
             <UserProtectedRoute>
-              <BulkOrderPage setIsUserAuthenticated={setIsUserAuthenticated} />
+              <BulkOrderPage />
             </UserProtectedRoute>
           }
         />

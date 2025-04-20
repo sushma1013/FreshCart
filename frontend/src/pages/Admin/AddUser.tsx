@@ -5,7 +5,7 @@ interface AddUserProps {
   setIsAdminAuthenticated?: React.Dispatch<React.SetStateAction<boolean>>; // Optional prop
 }
 
-const AddUser: React.FC<AddUserProps> = ({ setIsAdminAuthenticated }) => {
+const AddUser: React.FC<AddUserProps> = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,7 +23,7 @@ const AddUser: React.FC<AddUserProps> = ({ setIsAdminAuthenticated }) => {
     const newUser = { username, email, password };
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/add-user", {
+      const response = await fetch("https://freshcart-eqob.onrender.com/api/auth/add-user", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -43,12 +43,14 @@ const AddUser: React.FC<AddUserProps> = ({ setIsAdminAuthenticated }) => {
         setError(data.message || "Failed to add user");
         toast.error(data.message || "Failed to add user");
       }
-    } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error: unknown) {
       setError("Something went wrong. Please try again.");
       toast.error("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
+    
   };
 
   return (

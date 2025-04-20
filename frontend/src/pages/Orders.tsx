@@ -31,7 +31,7 @@ const MyOrdersPage: React.FC = () => {
           return;
         }
 
-        const response = await axios.get(`http://localhost:5000/api/orders/user/${userId}`);
+        const response = await axios.get(`https://freshcart-eqob.onrender.com/api/orders/user/${userId}`);
         setOrders(response.data);
         toast.dismiss();
       } catch (error) {

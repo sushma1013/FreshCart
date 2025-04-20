@@ -42,7 +42,7 @@ const BulkOrderPage: React.FC = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/products");
+        const response = await axios.get("https://freshcart-eqob.onrender.com/api/products");
         const data = response.data;
 
         if (Array.isArray(data)) {
@@ -55,7 +55,7 @@ const BulkOrderPage: React.FC = () => {
           setProducts(data.products);
           setFilteredProducts(data.products);
 
-          const uniqueCategories = [...new Set(data.products.map((p) => p.category))];
+          const uniqueCategories = [...new Set(data.products.map((p: { category: unknown; }) => p.category))] as string[];
           setCategories(uniqueCategories);
         } else {
           console.error("Unknown data format:", data);
@@ -144,7 +144,7 @@ const BulkOrderPage: React.FC = () => {
     console.log("Order details being sent:", orderDetails);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/orders/bulk-order', orderDetails);
+      const response = await axios.post('https://freshcart-eqob.onrender.com/api/orders/bulk-order', orderDetails);
 
       if (response.status === 201) {
         console.log("Order successfully stored in the database.");
@@ -159,13 +159,16 @@ const BulkOrderPage: React.FC = () => {
       }
     } catch (error) {
       console.error("Error submitting bulk order:", error);
-      if (error.response) {
-        console.error("Error message from server:", error.response.data.message);
-        alert(`Error: ${error.response.data.message}`);
+    
+      if (typeof error === "object" && error !== null && "response" in error) {
+        const err = error as { response: { data: { message: string } } };
+        console.error("Error message from server:", err.response.data.message);
+        alert(`Error: ${err.response.data.message}`);
       } else {
         alert("There was an issue submitting your order. Please try again.");
       }
     }
+    
   };
 
   return (

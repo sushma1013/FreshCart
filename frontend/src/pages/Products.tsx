@@ -32,7 +32,7 @@ const FetchProducts: React.FC = () => {
     const fetchProducts = async () => {
       toast.info("Loading products...", { autoClose: 1000 });
       try {
-        const response = await axios.get("http://localhost:5000/api/products");
+        const response = await axios.get("https://freshcart-eqob.onrender.com/api/products");
         const data = response.data;
 
         if (Array.isArray(data)) {
@@ -46,7 +46,7 @@ const FetchProducts: React.FC = () => {
         }
 
         if (Array.isArray(data.products)) {
-          const uniqueCategories = [...new Set(data.products.map((p: { category: string }) => p.category))];
+          const uniqueCategories = [...new Set(data.products.map((p: { category: string }) => p.category))] as string[];
           setCategories(uniqueCategories);
         }
 

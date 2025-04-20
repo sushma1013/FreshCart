@@ -37,7 +37,7 @@ const AddProduct: React.FC<AddProductProps> = ({ setIsAdminAuthenticated }) => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/products", {
+      const response = await fetch("https://freshcart-eqob.onrender.com/api/products", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -60,11 +60,16 @@ const AddProduct: React.FC<AddProductProps> = ({ setIsAdminAuthenticated }) => {
         imageUrl: "",
         category: "",
       });
-    } catch (error: any) {
-      toast.error(error.message || "Error adding product");
+    }catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Error adding product");
+      }
     } finally {
       setLoading(false);
     }
+    
   };
 
   return (

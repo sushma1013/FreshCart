@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
+// Define User interface
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
 interface ViewUsersProps {
   setIsAdminAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const ViewUsers: React.FC<ViewUsersProps> = ({ setIsAdminAuthenticated }) => {
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<User[]>([]); // Use User[] instead of any[]
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const navigate = useNavigate();
@@ -18,7 +25,7 @@ const ViewUsers: React.FC<ViewUsersProps> = ({ setIsAdminAuthenticated }) => {
       setError("");
 
       try {
-        const response = await fetch("http://localhost:5000/api/auth/users");
+        const response = await fetch("https://freshcart-eqob.onrender.com/api/auth/users");
 
         if (!response.ok) {
           throw new Error("Failed to fetch users");
@@ -26,6 +33,7 @@ const ViewUsers: React.FC<ViewUsersProps> = ({ setIsAdminAuthenticated }) => {
 
         const data = await response.json();
         setUsers(data);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         setError("Failed to fetch users");
       } finally {

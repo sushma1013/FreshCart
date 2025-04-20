@@ -16,21 +16,16 @@ interface ViewProductsProps {
   setIsAdminAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const ViewProducts: React.FC<ViewProductsProps> = ({ setIsAdminAuthenticated }) => {
+const ViewProducts: React.FC<ViewProductsProps> = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    setIsAdminAuthenticated(false);
-    localStorage.setItem("isAdminAuthenticated", "false");
-    navigate("/admin/signin");
-  };
-
+  
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:5000/api/products");
+      const response = await fetch("https://freshcart-eqob.onrender.com/api/products");
       const data = await response.json();
 
       if (Array.isArray(data)) {
@@ -58,7 +53,7 @@ const ViewProducts: React.FC<ViewProductsProps> = ({ setIsAdminAuthenticated }) 
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/products/${productId}`, {
+      const response = await fetch(`https://freshcart-eqob.onrender.com/api/products/${productId}`, {
         method: "DELETE",
       });
 
@@ -70,9 +65,14 @@ const ViewProducts: React.FC<ViewProductsProps> = ({ setIsAdminAuthenticated }) 
 
       toast.success("Product deleted successfully");
       fetchProducts(); // refresh the product list
-    } catch (error: any) {
-      toast.error(error.message || "Error deleting product");
+    }catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message || "Error deleting product");
+      } else {
+        toast.error("Unknown error occurred");
+      }
     }
+    
   };
 
   const handleEdit = (productId: number) => {

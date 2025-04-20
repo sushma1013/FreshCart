@@ -6,7 +6,7 @@ interface EditProductsProps {
   setIsAdminAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const EditProducts: React.FC<EditProductsProps> = ({ setIsAdminAuthenticated }) => {
+const EditProducts: React.FC<EditProductsProps> = () => {
   const { productId } = useParams<{ productId: string }>();
   const [formData, setFormData] = useState({
     name: "",
@@ -22,7 +22,7 @@ const EditProducts: React.FC<EditProductsProps> = ({ setIsAdminAuthenticated }) 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/products/${productId}`);
+        const response = await fetch(`https://freshcart-eqob.onrender.com/api/products/${productId}`);
         const data = await response.json();
 
         if (response.ok) {
@@ -37,9 +37,12 @@ const EditProducts: React.FC<EditProductsProps> = ({ setIsAdminAuthenticated }) 
         } else {
           toast.error("Failed to fetch product details");
         }
-      } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (error: unknown) {
         toast.error("Error fetching product details");
       }
+      
+      
     };
 
     if (productId) {
@@ -76,9 +79,14 @@ const EditProducts: React.FC<EditProductsProps> = ({ setIsAdminAuthenticated }) 
 
       toast.success("Product updated successfully!");
       navigate("/admin/view-products");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error updating product:", error);
-      toast.error(error.message || "Error updating product");
+      
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Error updating product");
+      }
     } finally {
       setLoading(false);
     }
