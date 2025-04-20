@@ -5,6 +5,8 @@ import authRoutes from "./routes/authRoutes";
 import productsRoutes from "./routes/productsRoutes";
 import orderRoutes from "./routes/orderRoutes";
 import pool from "./config/db"; // We'll create db.ts to connect to Neon PostgreSQL
+import path from "path";
+import serverless from "serverless-http";
 
 // Initialize dotenv
 dotenv.config();
@@ -28,6 +30,10 @@ app.use("/api", orderRoutes);
 
 // Server Listen
 const PORT = process.env.PORT || 5000;
+const __dirname = path.resolve();
+module.exports.handler = serverless(app);
+
+
 
 app.listen(PORT, async () => {
   try {
